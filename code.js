@@ -11,7 +11,7 @@ var sp = {
         },
 
         getRowSize: function () {
-            rowSize = $('table tr').length;
+            rowSize = $('tr').length;
         },
 
         setListenerToImg: function () {
@@ -130,7 +130,7 @@ var solvability = {
             for (var k = 0; k < rowSize; k++) {
                 flattenedOrder.push(imgArray[(k * rowSize) + j]);
 
-                $.each(flattenedOrder, function (i) { // i - index
+                $.each(flattenedOrder, function (i) {
                     if (this.imgId == (rowSize - 1) * 11) { //only until 99 otherwise : this.imgId.toString == (rowSize-1).toString+(rowSize-1).toString()
                         emptyTileRow = Math.floor(i / 4) + 1;
                     }
