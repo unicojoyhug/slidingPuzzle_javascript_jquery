@@ -1,5 +1,6 @@
 var rowSize; // check the puzzle size (eg. 4x4 : rowSize = 4)
 var imgArray = []; // img array with key(1-16 flattened value) and value (imgId)
+var emptyTileRow; // check on which row the empty tile is (the last part of the picture)
 
 var sp = {
 
@@ -100,55 +101,54 @@ var sp = {
 
 //https://www.cs.bham.ac.uk/~mdr/teaching/modules04/java2/TilesSolvability.html
 var solvability = {
-    var emptyTileRow, // check on which row the empty tile is (the last part of the picture)
 
-        checkSolvability: function () {
-            var inversions = 0;
-            var listToCheck = solvability.convertListOrder(); // flattened order with 1-15 (without empty tile) value
+    checkSolvability: function () {
+        var inversions = 0;
+        var listToCheck = solvability.convertListOrder(); // flattened order with 1-15 (without empty tile) value
 
-            for (var i = 0; i < listToCheck.length; i++) {
-                for (var j = i + 1; j < listToCheck.length; j++) {
-                    if ((listToCheck[i].flattenedValue > listToCheck[j].flattenedValue)) {
-                        inversions++;
-                    }
+        for (var i = 0; i < listToCheck.length; i++) {
+            for (var j = i + 1; j < listToCheck.length; j++) {
+                if ((listToCheck[i].flattenedValue > listToCheck[j].flattenedValue)) {
+                    inversions++;
                 }
             }
-
-            return solvability.checkInversion(inversions);
-        },
-
-        checkInversion: function (inversions) {
-            if (rowSize % 2 == 1) { // odd numbered row (3x3, 5x5..)
-                return (inversions % 2 == 0);
-            } else { // even numbered row (4x4...)
-                console.log("odd inversion + odd distance/ even inversion - even distance : solvability :" + ((inversions + rowSize - emptyTileRow) % 2 == 0));
-                console.log("inversion: " + inversions + " empty tile : " + emptyTileRow + ", row distance between empty and bottom: " + (rowSize - emptyTileRow));
-
-                return ((inversions + rowSize - emptyTileRow) % 2 == 0);
-            }
-        },
-
-        convertListOrder: function () {
-            var flattenedOrder = [];
-            // index written out in a flattened order (0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15) 
-            // img list order by index above for inversion polarity check
-            for (var j = 0; j < rowSize; j++) {
-                for (var k = 0; k < rowSize; k++) {
-                    flattenedOrder.push(imgArray[(k * rowSize) + j]);
-
-                    $.each(flattenedOrder, function (i) {
-                        if (this.imgId == (rowSize - 1) * 11) { //only until 99 otherwise : this.imgId.toString == (rowSize-1).toString+(rowSize-1).toString()
-                            emptyTileRow = Math.floor(i / 4) + 1;
-                        }
-                    });
-                }
-            }
-
-            //check the flattened order using 1-16 index (without 16) AND return the list to check inversions
-            return $.grep(flattenedOrder, function (n) {
-                return n.flattenedValue != (rowSize * rowSize);
-            });
         }
+
+        return solvability.checkInversion(inversions);
+    },
+
+    checkInversion: function (inversions) {
+        if (rowSize % 2 == 1) { // odd numbered row (3x3, 5x5..)
+            return (inversions % 2 == 0);
+        } else { // even numbered row (4x4...)
+            console.log("odd inversion + odd distance/ even inversion - even distance : solvability :" + ((inversions + rowSize - emptyTileRow) % 2 == 0));
+            console.log("inversion: " + inversions + " empty tile : " + emptyTileRow + ", row distance between empty and bottom: " + (rowSize - emptyTileRow));
+
+            return ((inversions + rowSize - emptyTileRow) % 2 == 0);
+        }
+    },
+
+    convertListOrder: function () {
+        var flattenedOrder = [];
+        // index written out in a flattened order (0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15) 
+        // img list order by index above for inversion polarity check
+        for (var j = 0; j < rowSize; j++) {
+            for (var k = 0; k < rowSize; k++) {
+                flattenedOrder.push(imgArray[(k * rowSize) + j]);
+
+                $.each(flattenedOrder, function (i) {
+                    if (this.imgId == (rowSize - 1) * 11) { //only until 99 otherwise : this.imgId.toString == (rowSize-1).toString+(rowSize-1).toString()
+                        emptyTileRow = Math.floor(i / 4) + 1;
+                    }
+                });
+            }
+        }
+
+        //check the flattened order using 1-16 index (without 16) AND return the list to check inversions
+        return $.grep(flattenedOrder, function (n) {
+            return n.flattenedValue != (rowSize * rowSize);
+        });
+    }
 };
 
 $(sp.init);
