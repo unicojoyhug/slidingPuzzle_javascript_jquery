@@ -1,8 +1,6 @@
-var rowSize; // check the puzzle size (eg. 4x4 : rowSize = 4)
-var imgArray = []; // img array with key(1-16 flattened value) and value (imgId)
-var emptyTileRow; // check on which row the empty tile is (the last part of the picture)
-
 var sp = {
+    rowSize: null, // check the puzzle size (eg. 4x4 : rowSize = 4)
+    imgArray: [], // img array with key(1-16 flattened value) and value (imgId)
 
     init: function () {
         sp.getRowSize();
@@ -53,7 +51,7 @@ var sp = {
                 // convert id into 1-16 value as flattened order
                 var flattenedValue = (i + 1) + (j * rowSize);
 
-                imgArray.push({
+                sp.imgArray.push({
                     "flattenedValue": flattenedValue,
                     "imgId": i.toString() + j.toString()
                 });
@@ -65,14 +63,14 @@ var sp = {
         //shuffle until it is solvable.
 
         do {
-            sp.shuffleList(imgArray);
+            sp.shuffleList(sp.imgArray);
         } while (!solvability.checkSolvability())
 
         //set the solvable shuffled tiles using jquery instead of for loop
         $.each(imgIndex, function (i) {
-            var cell = $("#" + this).attr('src', 'img/hall-' + imgArray[i].imgId + '.jpg');
+            var cell = $("#" + this).attr('src', 'img/hall-' + sp.imgArray[i].imgId + '.jpg');
 
-            if (imgArray[i].imgId == (rowSize - 1) * 11) {
+            if (sp.imgArray[i].imgId == (rowSize - 1) * 11) {
                 cell.attr('hidden', 'true');
             }
         });
@@ -101,8 +99,10 @@ var sp = {
 
 //https://www.cs.bham.ac.uk/~mdr/teaching/modules04/java2/TilesSolvability.html
 var solvability = {
+    emptyTileRow: null, // check on which row the empty tile is (the last part of the picture)
 
     checkSolvability: function () {
+        this.rowSize = sp.rowSize;
         var inversions = 0;
         var listToCheck = solvability.convertListOrder(); // flattened order with 1-15 (without empty tile) value
 
@@ -134,7 +134,7 @@ var solvability = {
         // img list order by index above for inversion polarity check
         for (var j = 0; j < rowSize; j++) {
             for (var k = 0; k < rowSize; k++) {
-                flattenedOrder.push(imgArray[(k * rowSize) + j]);
+                flattenedOrder.push(sp.imgArray[(k * rowSize) + j]);
 
                 $.each(flattenedOrder, function (i) {
                     if (this.imgId == (rowSize - 1) * 11) { //only until 99 otherwise : this.imgId.toString == (rowSize-1).toString+(rowSize-1).toString()
