@@ -9,7 +9,7 @@ var sp = {
     },
 
     getRowSize: function () {
-        rowSize = $('tr').length;
+        sp.rowSize = $('tr').length;
     },
 
     setListenerToImg: function () {
@@ -46,10 +46,10 @@ var sp = {
     updateView: function () {
         var imgIndex = []; // img id in order 00-33 as the img id to loop to shuffle
 
-        for (var i = 0; i < rowSize; i++) {
-            for (var j = 0; j < rowSize; j++) {
+        for (var i = 0; i < sp.rowSize; i++) {
+            for (var j = 0; j < sp.rowSize; j++) {
                 // convert id into 1-16 value as flattened order
-                var flattenedValue = (i + 1) + (j * rowSize);
+                var flattenedValue = (i + 1) + (j * sp.rowSize);
 
                 sp.imgArray.push({
                     "flattenedValue": flattenedValue,
@@ -70,7 +70,7 @@ var sp = {
         $.each(imgIndex, function (i) {
             var cell = $("#" + this).attr('src', 'img/hall-' + sp.imgArray[i].imgId + '.jpg');
 
-            if (sp.imgArray[i].imgId == (rowSize - 1) * 11) {
+            if (sp.imgArray[i].imgId == (sp.rowSize - 1) * 11) {
                 cell.attr('hidden', 'true');
             }
         });
@@ -102,7 +102,6 @@ var solvability = {
     emptyTileRow: null, // check on which row the empty tile is (the last part of the picture)
 
     checkSolvability: function () {
-        this.rowSize = sp.rowSize;
         var inversions = 0;
         var listToCheck = solvability.convertListOrder(); // flattened order with 1-15 (without empty tile) value
 
@@ -118,13 +117,13 @@ var solvability = {
     },
 
     checkInversion: function (inversions) {
-        if (rowSize % 2 == 1) { // odd numbered row (3x3, 5x5..)
+        if (sp.rowSize % 2 == 1) { // odd numbered row (3x3, 5x5..)
             return (inversions % 2 == 0);
         } else { // even numbered row (4x4...)
-            console.log("odd inversion + odd distance/ even inversion - even distance : solvability :" + ((inversions + rowSize - emptyTileRow) % 2 == 0));
-            console.log("inversion: " + inversions + " empty tile : " + emptyTileRow + ", row distance between empty and bottom: " + (rowSize - emptyTileRow));
+            console.log("odd inversion + odd distance/ even inversion - even distance : solvability :" + ((inversions + sp.rowSize - emptyTileRow) % 2 == 0));
+            console.log("inversion: " + inversions + " empty tile : " + emptyTileRow + ", row distance between empty and bottom: " + (sp.rowSize - emptyTileRow));
 
-            return ((inversions + rowSize - emptyTileRow) % 2 == 0);
+            return ((inversions + sp.rowSize - emptyTileRow) % 2 == 0);
         }
     },
 
@@ -132,12 +131,12 @@ var solvability = {
         var flattenedOrder = [];
         // index written out in a flattened order (0,4,8,12,1,5,9,13,2,6,10,14,3,7,11,15) 
         // img list order by index above for inversion polarity check
-        for (var j = 0; j < rowSize; j++) {
-            for (var k = 0; k < rowSize; k++) {
-                flattenedOrder.push(sp.imgArray[(k * rowSize) + j]);
+        for (var j = 0; j < sp.rowSize; j++) {
+            for (var k = 0; k < sp.rowSize; k++) {
+                flattenedOrder.push(sp.imgArray[(k * sp.rowSize) + j]);
 
                 $.each(flattenedOrder, function (i) {
-                    if (this.imgId == (rowSize - 1) * 11) { //only until 99 otherwise : this.imgId.toString == (rowSize-1).toString+(rowSize-1).toString()
+                    if (this.imgId == (sp.rowSize - 1) * 11) { //only until 99 otherwise : this.imgId.toString == (rowSize-1).toString+(rowSize-1).toString()
                         emptyTileRow = Math.floor(i / 4) + 1;
                     }
                 });
@@ -146,7 +145,7 @@ var solvability = {
 
         //check the flattened order using 1-16 index (without 16) AND return the list to check inversions
         return $.grep(flattenedOrder, function (n) {
-            return n.flattenedValue != (rowSize * rowSize);
+            return n.flattenedValue != (sp.rowSize * sp.rowSize);
         });
     }
 };
